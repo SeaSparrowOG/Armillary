@@ -52,8 +52,13 @@ set_target_properties(CommonLibSSE PROPERTIES
 set(DATA_DIR "${PROJECT_SOURCE_DIR}/data")
 
 install(
-	FILES "${DATA_DIR}/SKSE/Plugins/Armillary.ini"
-	DESTINATION "SKSE/Plugins"
+	FILES "${DATA_DIR}/Armillary.esp"
+	DESTINATION "."
+)
+
+install(
+	FILES "${DATA_DIR}/Armillary.bsa"
+	DESTINATION "."
 )
 
 include(components.cmake)

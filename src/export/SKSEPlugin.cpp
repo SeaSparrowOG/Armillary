@@ -1,4 +1,5 @@
 #include "hooks/hooks.h"
+#include "data/modObjectManager.h"
 #include "Papyrus/papyrus.h"
 #include "serialization/serialization.h"
 
@@ -65,6 +66,7 @@ static void MessageEventCallback(SKSE::MessagingInterface::Message* a_msg)
 {
 	switch (a_msg->type) {
 	case SKSE::MessagingInterface::kDataLoaded:
+		Data::ModObjectManager::Instance().Reload();
 		break;
 	default:
 		break;
@@ -77,7 +79,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	logger::info("{} v{}"sv, Plugin::NAME, Plugin::VERSION.string());
 
 	SKSE::Init(a_skse);
-	SKSE::AllocTrampoline(0);
+	SKSE::AllocTrampoline(28);
 
 	const auto ver = a_skse->RuntimeVersion();
 	if (ver < SKSE::RUNTIME_1_6_1130) {
