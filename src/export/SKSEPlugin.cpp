@@ -1,5 +1,6 @@
 #include "hooks/hooks.h"
 #include "Papyrus/papyrus.h"
+#include "serialization/serialization.h"
 
 namespace
 {
@@ -88,5 +89,11 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 
 	Hooks::Install();
 	SKSE::GetPapyrusInterface()->Register(Papyrus::RegisterFunctions);
+
+	const auto serialization = SKSE::GetSerializationInterface();
+	serialization->SetUniqueID(Serialization::ID);
+	serialization->SetSaveCallback(&Serialization::SaveCallback);
+	serialization->SetLoadCallback(&Serialization::LoadCallback);
+	serialization->SetRevertCallback(&Serialization::RevertCallback);
 	return true;
 }

@@ -4,7 +4,7 @@ option(BUILD_TEST "Sets log level to debug." OFF)
 
 # -------- Project ----------
 project(
-	ProjectTemplate
+	Armillary
 	VERSION 1.0.0
 	LANGUAGES CXX
 )
@@ -52,7 +52,7 @@ set_target_properties(CommonLibSSE PROPERTIES
 set(DATA_DIR "${PROJECT_SOURCE_DIR}/data")
 
 install(
-	FILES "${DATA_DIR}/SKSE/Plugins/replaceme.ini"
+	FILES "${DATA_DIR}/SKSE/Plugins/Armillary.ini"
 	DESTINATION "SKSE/Plugins"
 )
 

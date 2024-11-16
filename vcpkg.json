@@ -1,7 +1,7 @@
 {
-  "name": "replaceme",
+  "name": "armillary",
   "version-string": "1.0.0",
-  "description": "Template for SKSE plugin built using my commonlib. MIT License by default.",
+  "description": "Complete modular gameplay overhaul for SkyrimSE.",
   "homepage": "",
   "license": "MIT",
   "dependencies": [
