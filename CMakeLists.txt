@@ -62,6 +62,11 @@ install(
 )
 
 install(
+	FILES "${DATA_DIR}/SKSE/Plugins/ActorValueData/Armillary_AVG.toml"
+	DESTINATION "."
+)
+
+install(
 	FILES "${DATA_DIR}/Armillary.esp"
 	DESTINATION "."
 )

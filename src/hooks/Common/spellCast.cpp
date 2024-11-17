@@ -31,11 +31,16 @@ namespace Hooks::Spells
 		}
 
 		float chargeTime = 1.25f;
-		const auto illusionQuickcharge = Data::ModObject<RE::BGSPerk>("ARM_Illusion_PRK_000_Illusionist00");
-		const auto conjurationQuickcharge = Data::ModObject<RE::BGSPerk>("ARM_Conjuration_PRK_000_Conjurer00");
-		const auto destructionQuickcharge = Data::ModObject<RE::BGSPerk>("ARM_Destruction_PRK_000_Elementalist00");
-		const auto restorationQuickcharge = Data::ModObject<RE::BGSPerk>("ARM_Restoration_PRK_000_Healer00");
-		const auto alterationQuickcharge = Data::ModObject<RE::BGSPerk>("ARM_Alteration_PRK_000_Thaumaturge00");
+
+		if (currentSpell->GetCastingType() == RE::MagicSystem::CastingType::kConcentration) {
+			chargeTime -= 0.25;
+		}
+
+		const auto illusionQuickcharge = Data::ModObject<RE::BGSPerk>("ARM_Illusion_PRK_020_IllusionDualCasting");
+		const auto conjurationQuickcharge = Data::ModObject<RE::BGSPerk>("ARM_Conjuration_PRK_020_ConjurationDualCasting");
+		const auto destructionQuickcharge = Data::ModObject<RE::BGSPerk>("ARM_Destruction_PRK_020_DestructionDualCasting");
+		const auto restorationQuickcharge = Data::ModObject<RE::BGSPerk>("ARM_Restoration_PRK_020_DualCasting");
+		const auto alterationQuickcharge = Data::ModObject<RE::BGSPerk>("ARM_Alteration_PRK_020_AlterationDualCasting");
 		assert(illusionQuickcharge && conjurationQuickcharge && destructionQuickcharge && restorationQuickcharge && alterationQuickcharge);
 
 		const auto casterActor = a_magicCaster->GetCasterAsActor();

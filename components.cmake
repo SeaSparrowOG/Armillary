@@ -15,6 +15,14 @@ install(
 )
 
 install(
+	FILES
+		"${DATA_DIR}/SKSE/Plugins/ActorValueData/Armillary_AVG.toml"
+	DESTINATION "SKSE/Plugins/ActorValueData"
+	COMPONENT components
+	EXCLUDE_FROM_ALL
+)
+
+install(
 	FILES "${DATA_DIR}/Source/Scripts/SEA_Armillary.psc"
 	DESTINATION "Source/Scripts"
 	COMPONENT components

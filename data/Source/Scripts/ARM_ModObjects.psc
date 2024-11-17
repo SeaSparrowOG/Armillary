@@ -4,11 +4,11 @@ Scriptname ARM_ModObjects extends Quest
 ;/
 Common objects, used by the combat overhaul.
 /;
-Perk Property ARM_Illusion_PRK_000_Illusionist00 Auto
-Perk Property ARM_Conjuration_PRK_000_Conjurer00 Auto
-Perk Property ARM_Destruction_PRK_000_Elementalist00 Auto
-Perk Property ARM_Restoration_PRK_000_Healer00 Auto
-Perk Property ARM_Alteration_PRK_000_Thaumaturge00 Auto
+Perk Property ARM_Alteration_PRK_020_AlterationDualCasting Auto
+Perk Property ARM_Conjuration_PRK_020_ConjurationDualCasting Auto
+Perk Property ARM_Destruction_PRK_020_DestructionDualCasting Auto
+Perk Property ARM_Illusion_PRK_020_IllusionDualCasting Auto
+Perk Property ARM_Restoration_PRK_020_DualCasting Auto
 
 Spell Property ARM_Common_SPL_StaggerCooldownSpell Auto
 MagicEffect Property ARM_Common_MGF_StaggerCooldownFFTActor Auto
