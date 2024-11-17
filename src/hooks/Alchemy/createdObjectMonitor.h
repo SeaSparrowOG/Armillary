@@ -1,3 +1,5 @@
+#pragma once
+
 #include "utilities/utilities.h"
 
 namespace Hooks

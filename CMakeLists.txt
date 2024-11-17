@@ -52,6 +52,16 @@ set_target_properties(CommonLibSSE PROPERTIES
 set(DATA_DIR "${PROJECT_SOURCE_DIR}/data")
 
 install(
+	FILES "${DATA_DIR}/Source/Scripts/SEA_Armillary.psc"
+	DESTINATION "."
+)
+
+install(
+	FILES "${DATA_DIR}/Source/Scripts/ARM_ModObjects.psc"
+	DESTINATION "."
+)
+
+install(
 	FILES "${DATA_DIR}/Armillary.esp"
 	DESTINATION "."
 )
