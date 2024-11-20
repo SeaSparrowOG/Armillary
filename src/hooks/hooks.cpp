@@ -2,6 +2,7 @@
 
 #include "Alchemy/createdObjectMonitor.h"
 #include "Common/combatHit.h"
+#include "Common/conditions.h"
 #include "Common/spellCast.h"
 #include "Destruction/destructionManager.h"
 
@@ -12,6 +13,8 @@ namespace Hooks {
 		Hooks::Alchemy::Install();
 		logger::info("Installing Spell Cast hooks...");
 		Hooks::Spells::Install();
+		logger::info("Installing Condition hooks...");
+		Conditions::Install();
 		logger::info("Installing Combat Hit hooks...");
 		Hooks::CombatHit::Install();
 		logger::info("Installing Destruction hooks...");

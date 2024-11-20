@@ -28,51 +28,7 @@ namespace Hooks::Destruction
 		const auto magicCaster = sourceActor ? sourceActor->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant) : nullptr;
 
 		if (spell && hitActor && magicCaster) {
-			const auto reduceFire = Data::ModObject<RE::SpellItem>("ARM_Destruction_SPL_ReduceResistanceFire");
-			const auto reduceFrost = Data::ModObject<RE::SpellItem>("ARM_Destruction_SPL_ReduceResistanceFrost");
-			const auto reduceShock = Data::ModObject<RE::SpellItem>("ARM_Destruction_SPL_ReduceResistanceShock");
-			assert(reduceFire && reduceFrost && reduceShock);
-
-			const auto elementalStrike = Data::ModObject<RE::BGSPerk>("ARM_Destruction_PRK_040_ElementalStrike");
-			assert(elementalStrike);
-
-			if (elementalStrike && reduceFire && reduceFrost && reduceShock) {
-				if (elementalStrike && sourceActor->HasPerk(elementalStrike)) {
-					bool fire = false;
-					bool frost = false;
-					bool shock = false;
-
-					for (const auto effect : spell->effects) {
-						if (!effect->baseEffect) {
-							continue;
-						}
-
-						const auto baseEffect = effect->baseEffect;
-						if (!fire && baseEffect->HasKeywordString("MagicDamageFire")) {
-							fire = true;
-						}
-						if (!frost && baseEffect->HasKeywordString("MagicDamageFrost")) {
-							frost = true;
-						}
-						if (!shock && baseEffect->HasKeywordString("MagicDamageShock")) {
-							shock = true;
-						}
-					}
-
-					logger::debug("Front: {}", Utilities::EDID::GetEditorID(reduceFire->effects.back()->baseEffect));
-					if (fire && !hitActor->HasMagicEffect(reduceFire->effects.front()->baseEffect)) {
-						magicCaster->CastSpellImmediate(reduceFire, false, hitActor, 1.0f, false, 0.0f, hitActor);
-					}
-
-					if (frost && !hitActor->HasMagicEffect(reduceFrost->effects.front()->baseEffect)) {
-						magicCaster->CastSpellImmediate(reduceFrost, false, hitActor, 1.0f, false, 0.0f, hitActor);
-					}
-
-					if (shock && !hitActor->HasMagicEffect(reduceShock->effects.front()->baseEffect)) {
-						magicCaster->CastSpellImmediate(reduceShock, false, hitActor, 1.0f, false, 0.0f, hitActor);
-					}
-				}
-			}
+			
 		}
 		return _explosionProcessTargets(a_this, a_hit, a3, a4, a5, a6, a7);
 	}
