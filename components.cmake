@@ -35,3 +35,24 @@ install(
 	COMPONENT components
 	EXCLUDE_FROM_ALL
 )
+
+install(
+	FILES "${DATA_DIR}/Source/Scripts/ARM_ElementsAriseHazardsShock.psc"
+	DESTINATION "Source/Scripts"
+	COMPONENT components
+	EXCLUDE_FROM_ALL
+)
+
+install(
+	FILES "${DATA_DIR}/Source/Scripts/ARM_ElementsAriseHazardsFrost.psc"
+	DESTINATION "Source/Scripts"
+	COMPONENT components
+	EXCLUDE_FROM_ALL
+)
+
+install(
+	FILES "${DATA_DIR}/Source/Scripts/ARM_ElementsAriseHazards.psc"
+	DESTINATION "Source/Scripts"
+	COMPONENT components
+	EXCLUDE_FROM_ALL
+)

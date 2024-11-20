@@ -2,13 +2,15 @@
 
 #include "data/modObjectManager.h"
 #include "RE/Misc.h"
+#include "spellCast.h"
+#include "spellCast.h"
 
 namespace Hooks::Spells
 {
 	void ChargeTimeManager::Install()
 	{
 		//1.6.1170: 1405b1c0b
-		REL::Relocation<std::uintptr_t> setCastingTimerForChargeTarget{ REL::ID(34146), 0x4B }; //Expected: e9 20 cc 00 00
+		REL::Relocation<std::uintptr_t> setCastingTimerForChargeTarget{ REL::ID(34146), 0x4B };
 		if (!REL::make_pattern<"E9">().match(setCastingTimerForChargeTarget.address())) {
 			util::report_and_fail("Common Spell Cast: Failed to validate pattern, aborting launch.");
 		}
@@ -30,7 +32,21 @@ namespace Hooks::Spells
 			return;
 		}
 
-		float chargeTime = 1.25f;
+		const auto ritualSpellEffect = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("RitualSpellEffect");
+		assert(ritualSpellEffect);
+
+		if (ritualSpellEffect) {
+			for (const auto effect : currentSpell->effects) {
+				if (!effect->baseEffect) {
+					continue;
+				}
+				if (effect->baseEffect->HasKeyword(ritualSpellEffect)) {
+					return;
+				}
+			}
+		}
+
+		float chargeTime = 1.00f;
 
 		if (currentSpell->GetCastingType() == RE::MagicSystem::CastingType::kConcentration) {
 			chargeTime -= 0.25;
@@ -90,8 +106,8 @@ namespace Hooks::Spells
 		if (quickcharge < 0.0f) {
 			quickcharge = 0.0f;
 		}
-		else if (quickcharge > 0.75f) {
-			quickcharge = 0.75f;
+		else if (quickcharge > 0.90f) {
+			quickcharge = 0.90f;
 		}
 		chargeTime *= 1.0f - quickcharge;
 		a_magicCaster->castingTimer = chargeTime;
