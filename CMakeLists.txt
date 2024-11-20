@@ -1,3 +1,6 @@
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 cmake_minimum_required(VERSION 3.24)
 
 option(BUILD_TEST "Sets log level to debug." OFF)
