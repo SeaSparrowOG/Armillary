@@ -13,9 +13,11 @@ namespace Hooks
 			void Install();
 
 		private:
-			static bool Explosion__ProcessTargets(RE::Projectile* a_this, RE::TESObjectREFR* a_hit, void* a3, void* a4, int a5, void* a6, void* a7);
+			static bool ProcessSpellCollision(RE::Projectile* a_this, RE::TESObjectREFR* a_hit, void* a3, void* a4, int a5, void* a6, void* a7);
+			static bool ProcessSpellCollisionBeam(RE::Projectile* a_this, RE::TESObjectREFR* a_hit, void* a3, void* a4, int a5, void* a6, void* a7);
 
-			inline static REL::Relocation<decltype(&Explosion__ProcessTargets)> _explosionProcessTargets;
+			inline static REL::Relocation<decltype(&ProcessSpellCollision)> _processSpellCollision;
+			inline static REL::Relocation<decltype(&ProcessSpellCollisionBeam)> _processSpellCollisionBeam;
 		};
 	}
 }

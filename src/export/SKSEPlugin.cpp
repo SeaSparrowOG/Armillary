@@ -1,5 +1,6 @@
 #include "hooks/hooks.h"
 #include "data/modObjectManager.h"
+#include "events/events.h"
 #include "Papyrus/papyrus.h"
 #include "runtimePatcher/runtimePatcher.h"
 #include "serialization/serialization.h"
@@ -69,6 +70,7 @@ static void MessageEventCallback(SKSE::MessagingInterface::Message* a_msg)
 	case SKSE::MessagingInterface::kDataLoaded:
 		Data::ModObjectManager::Instance().Reload();
 		RuntimePatcher::PatchAllForms();
+		Events::Install();
 		break;
 	default:
 		break;

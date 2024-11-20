@@ -41,7 +41,6 @@ namespace Conditions::IsCurrentSpell
 				const auto leftSpell = magicCasterLeft ? magicCasterLeft->currentSpell : nullptr;
 				const auto rightSpell = magicCasterRight ? magicCasterRight->currentSpell : nullptr;
 
-				logger::debug("Hook call: {} -> {} <{}/{}>", a_target->GetName(), a_spell ? a_spell->GetName() : "NULL", leftSpell ? leftSpell->GetName() : "NULL", rightSpell ? rightSpell->GetName() : "NULL");
 				if (a_spell == dummyFire) {
 					if (leftSpell && a_target->IsCasting(leftSpell)) {
 						for (const auto effect : leftSpell->effects) {
@@ -50,7 +49,6 @@ namespace Conditions::IsCurrentSpell
 							}
 
 							if (effect->baseEffect->HasKeywordString("MagicDamageFire")) {
-								logger::debug("FAYAH");
 								return 1;
 							}
 						}

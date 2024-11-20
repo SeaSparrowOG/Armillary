@@ -47,10 +47,7 @@ namespace Hooks::CombatHit
 		}
 		else {
 			if (isPowerAttack && !a_target->HasMagicEffect(staggerSpellCooldown)) {
-				const auto magicCaster = attacker->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
-				if (magicCaster) {
-					magicCaster->CastSpellImmediate(staggerSpell, true, a_target, 1.0f, false, 0.0f, attacker);
-				}
+				magicCaster->CastSpellImmediate(staggerSpell, true, a_target, 1.0f, false, 0.0f, attacker);
 			}
 		}
 		_combatHit(a_target, a_hitData);

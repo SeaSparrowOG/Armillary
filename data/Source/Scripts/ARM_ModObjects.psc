@@ -36,3 +36,34 @@ Perk Property ARM_Alchemy_PRK_060_QualityIngredients Auto
 Perk Property ARM_Alchemy_PRK_050_LastingTreatment Auto 
 Perk Property ARM_Alchemy_PRK_080_SlowDeath Auto 
 Perk Property ARM_Alchemy_PRK_080_Stimulants Auto 
+
+;/
+Destruction related objects
+/;
+Keyword Property ARM_Destruction_KWD_MagicCloakFire Auto
+{Automatically distributed to flame cloak spells at startup.}
+Keyword Property ARM_Destruction_KWD_MagicCloakFrost Auto
+{Automatically distributed to frost cloak spells at startup.}
+Keyword Property ARM_Destruction_KWD_MagicCloakShock Auto
+{Automatically distributed to shock cloak spells at startup.}
+
+Perk Property ARM_Destruction_PRK_040_Inspired Auto 
+Perk Property ARM_Destruction_PRK_080_ElementsArise Auto
+Perk Property ARM_Destruction_PRK_050_ReIgnite Auto
+Perk Property ARM_Destruction_PRK_050_Wither Auto 
+Perk Property ARM_Destruction_PRK_050_Incapacitate Auto 
+Perk Property ARM_Destruction_PRK_070_ArcBurn Auto
+
+Spell Property ARM_Destruction_SPL_InspireProc Auto
+{Applied by the DLL when an actor dual casts a destruction spell while they have the Inspired perk.}
+
+Spell Property ARM_Destruction_SPL_WitherProc Auto
+Spell Property ARM_Destruction_SPL_ReIgniteProc Auto 
+Spell Property ARM_Destruction_SPL_IncapacitateProc Auto
+{Applied by the DLL when their respective perks would normally apply.}
+
+
+Spell Property ARM_Destruction_SPL_DummyFireCastDetector Auto
+Spell Property ARM_Destruction_SPL_DummyFrostCastDetector Auto
+Spell Property ARM_Destruction_SPL_DummyShockCastDetector Auto
+{Dummy spells, never applied to anyone. The DLL hijacks IsCasting, and if IsCasting checks for these spells in the left hand, it checks to see if you are casting an elemental spell instead.}

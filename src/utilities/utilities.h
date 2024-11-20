@@ -71,6 +71,19 @@ namespace Utilities
 			ISingleton() = default;
 			~ISingleton() = default;
 		};
+
+		template <class T, class E>
+		class EventClass : public ISingleton<T>,
+			public RE::BSTEventSink<E>
+		{
+		public:
+			void RegisterListener() {
+				auto* eventHolder = RE::ScriptEventSourceHolder::GetSingleton();
+				if (!eventHolder) return;
+
+				eventHolder->AddEventSink(this);
+			}
+		};
 	}
 
 	namespace String

@@ -62,6 +62,21 @@ install(
 )
 
 install(
+	FILES "${DATA_DIR}/Source/Scripts/ARM_ElementsAriseHazards.psc"
+	DESTINATION "."
+)
+
+install(
+	FILES "${DATA_DIR}/Source/Scripts/ARM_ElementsAriseHazardsFrost.psc"
+	DESTINATION "."
+)
+
+install(
+	FILES "${DATA_DIR}/Source/Scripts/ARM_ElementsAriseHazardsShock.psc"
+	DESTINATION "."
+)
+
+install(
 	FILES "${DATA_DIR}/SKSE/Plugins/ActorValueData/Armillary_AVG.toml"
 	DESTINATION "."
 )

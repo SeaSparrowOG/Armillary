@@ -3,4 +3,4 @@ type = "Adaptive"
 alias = "Aggression"
 
 [Include]
-"Armillary Test.esp" = ["Quickcharge"]
+"Armillary.esp" = ["Quickcharge"]
