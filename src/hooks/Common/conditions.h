@@ -11,6 +11,8 @@ namespace Conditions
 		public:
 			void Install();
 
+			bool IsActorVulnerable(RE::Actor* a_target);
+
 		private:
 			static unsigned long long IsCurrentSpell(RE::Actor* a_target, RE::MagicItem* a_spell);
 

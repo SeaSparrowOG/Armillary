@@ -21,6 +21,32 @@ namespace Conditions::IsCurrentSpell
 		_isCurrentSpell = trampoline.write_call<5>(IsCurrentSpellTarget.address(), &IsCurrentSpell);
 	}
 
+	bool Manager::IsActorVulnerable(RE::Actor* a_target)
+	{
+		if (!a_target || a_target->IsDead()) {
+			return false;
+		}
+
+		if (a_target->IsPowerAttacking()) {
+			return true;
+		}
+
+		const auto targetMagicCasterLeft = a_target->GetMagicCaster(RE::MagicSystem::CastingSource::kLeftHand);
+		const auto targetMagicCasterRight = a_target->GetMagicCaster(RE::MagicSystem::CastingSource::kRightHand);
+		bool casting = targetMagicCasterLeft ? targetMagicCasterLeft->currentSpell : false;
+		casting = !casting && targetMagicCasterRight ? targetMagicCasterRight->currentSpell != nullptr : casting;
+		if (casting) {
+			return true;
+		}
+
+		const auto staggered = a_target->actorState2.staggered > 0;
+		if (staggered) {
+			return true;
+		}
+
+		return false;
+	}
+
 	unsigned long long Manager::IsCurrentSpell(RE::Actor* a_target, RE::MagicItem* a_spell)
 	{
 		const auto response = _isCurrentSpell(a_target, a_spell);
