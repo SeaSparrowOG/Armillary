@@ -85,6 +85,21 @@ install(
 )
 
 install(
+	FILES "${DATA_DIR}/SKSE/Plugins/CustomSkills/SKILLS.json"
+	DESTINATION "."
+)
+
+install(
+	FILES "${DATA_DIR}/SKSE/Plugins/CustomSkills/Armillary/Adventuring.json"
+	DESTINATION "."
+)
+
+install(
+	FILES "${DATA_DIR}/Interface/Translations/Armillary_ENGLISH.txt"
+	DESTINATION "."
+)
+
+install(
 	FILES "${DATA_DIR}/Armillary.esp"
 	DESTINATION "."
 )
