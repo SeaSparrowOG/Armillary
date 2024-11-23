@@ -25,7 +25,7 @@ install(
 install(
 	FILES
 		"${DATA_DIR}/SKSE/Plugins/CustomSkills/SKILLS.json"
-	DESTINATION "SKSE/Plugins/ActorValueData"
+	DESTINATION "SKSE/Plugins/CustomSkills"
 	COMPONENT components
 	EXCLUDE_FROM_ALL
 )
@@ -33,7 +33,7 @@ install(
 install(
 	FILES
 		"${DATA_DIR}/SKSE/Plugins/CustomSkills/Armillary/Adventuring.json"
-	DESTINATION "SKSE/Plugins/ActorValueData"
+	DESTINATION "SKSE/Plugins/CustomSkills/Armillary"
 	COMPONENT components
 	EXCLUDE_FROM_ALL
 )
@@ -41,7 +41,7 @@ install(
 install(
 	FILES
 		"${DATA_DIR}/Interface/Translations/Armillary_ENGLISH.txt"
-	DESTINATION "SKSE/Plugins/ActorValueData"
+	DESTINATION "Interface/Translations"
 	COMPONENT components
 	EXCLUDE_FROM_ALL
 )
