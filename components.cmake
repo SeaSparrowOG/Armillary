@@ -23,6 +23,30 @@ install(
 )
 
 install(
+	FILES
+		"${DATA_DIR}/SKSE/Plugins/CustomSkills/SKILLS.json"
+	DESTINATION "SKSE/Plugins/ActorValueData"
+	COMPONENT components
+	EXCLUDE_FROM_ALL
+)
+
+install(
+	FILES
+		"${DATA_DIR}/SKSE/Plugins/CustomSkills/Armillary/Adventuring.json"
+	DESTINATION "SKSE/Plugins/ActorValueData"
+	COMPONENT components
+	EXCLUDE_FROM_ALL
+)
+
+install(
+	FILES
+		"${DATA_DIR}/Interface/Translations/Armillary_ENGLISH.txt"
+	DESTINATION "SKSE/Plugins/ActorValueData"
+	COMPONENT components
+	EXCLUDE_FROM_ALL
+)
+
+install(
 	FILES "${DATA_DIR}/Source/Scripts/SEA_Armillary.psc"
 	DESTINATION "Source/Scripts"
 	COMPONENT components

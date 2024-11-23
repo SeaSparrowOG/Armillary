@@ -4,10 +4,10 @@
 
 void Conditions::Install()
 {
-	IsCurrentSpell::Manager::GetSingleton()->Install();
+	Manager::GetSingleton()->Install();
 }
 
-namespace Conditions::IsCurrentSpell
+namespace Conditions
 {
 	void Manager::Install()
 	{
@@ -18,12 +18,48 @@ namespace Conditions::IsCurrentSpell
 		}
 
 		auto& trampoline = SKSE::GetTrampoline();
-		_isCurrentSpell = trampoline.write_call<5>(IsCurrentSpellTarget.address(), &IsCurrentSpell);
+		_hasSpell = trampoline.write_call<5>(IsCurrentSpellTarget.address(), &HasSpell);
 	}
 
-	unsigned long long Manager::IsCurrentSpell(RE::Actor* a_target, RE::MagicItem* a_spell)
+	bool Manager::IsActorVulnerable(RE::Actor* a_target)
 	{
-		const auto response = _isCurrentSpell(a_target, a_spell);
+		if (!a_target || a_target->IsDead()) {
+			return false;
+		}
+
+		const auto vulnerableSpell = Data::ModObject<RE::SpellItem>("ARM_Common_SPL_VulnerableTargetMarker");
+		assert(vulnerableSpell);
+		if (vulnerableSpell && a_target->HasMagicEffect(vulnerableSpell->effects.front()->baseEffect)) {
+			return true;
+		}
+
+		if (a_target->IsPowerAttacking()) {
+			return true;
+		}
+
+		if (a_target->IsCasting(nullptr)) {
+			const auto middleHigh = a_target->GetMiddleHighProcess();
+			const auto wardState = middleHigh ? middleHigh->wardState : RE::MagicSystem::WardState::kNone;
+			const bool isWarding = wardState == RE::MagicSystem::WardState::kAbsorb;
+			if (!isWarding) {
+				return true;
+			}
+		}
+
+		const auto staggered = a_target->actorState2.staggered > 0;
+		if (staggered) {
+			return true;
+		}
+
+		if (a_target->GetAttackState() == RE::ATTACK_STATE_ENUM::kBowDrawn) {
+			return true;
+		}
+		return false;
+	}
+
+	unsigned long long Manager::HasSpell(RE::Actor* a_target, RE::MagicItem* a_spell)
+	{
+		const auto response = _hasSpell(a_target, a_spell);
 
 		const auto elementsArise = Data::ModObject<RE::BGSPerk>("ARM_Destruction_PRK_080_ElementsArise");
 		assert(elementsArise);

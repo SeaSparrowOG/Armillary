@@ -9,8 +9,11 @@ Perk Property ARM_Conjuration_PRK_020_ConjurationDualCasting Auto
 Perk Property ARM_Destruction_PRK_020_DestructionDualCasting Auto
 Perk Property ARM_Illusion_PRK_020_IllusionDualCasting Auto
 Perk Property ARM_Restoration_PRK_020_DualCasting Auto
+Perk Property ARM_Common_avManager Auto 
 
 Spell Property ARM_Common_SPL_StaggerCooldownSpell Auto
+Spell Property ARM_Common_SPL_VulnerableTargetMarker Auto 
+
 MagicEffect Property ARM_Common_MGF_StaggerCooldownFFTActor Auto
 {Cooldown spell effect. The duration of it defines how long actors won't be stunned again for.}
 
@@ -37,6 +40,14 @@ Perk Property ARM_Alchemy_PRK_050_LastingTreatment Auto
 Perk Property ARM_Alchemy_PRK_080_SlowDeath Auto 
 Perk Property ARM_Alchemy_PRK_080_Stimulants Auto 
 
+;/
+Armor related objects
+/;
+Perk Property ARM_Armor_PRK_100_Unbreakable Auto
+
+Keyword Property ARM_Armor_KWD_HeavyCuirass Auto 
+Keyword Property ARM_Armor_KWD_LightCuirass Auto 
+Keyword Property ARM_Armor_KWD_ClothingCuirass Auto 
 ;/
 Destruction related objects
 /;

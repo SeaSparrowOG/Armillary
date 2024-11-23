@@ -5,16 +5,16 @@
 namespace Conditions
 {
 	void Install();
-	namespace IsCurrentSpell
-	{
-		class Manager : public Utilities::Singleton::ISingleton<Manager> {
-		public:
-			void Install();
 
-		private:
-			static unsigned long long IsCurrentSpell(RE::Actor* a_target, RE::MagicItem* a_spell);
+	class Manager : public Utilities::Singleton::ISingleton<Manager> {
+	public:
+		void Install();
 
-			inline static REL::Relocation<decltype(&IsCurrentSpell)> _isCurrentSpell;
-		};
-	}
+		bool IsActorVulnerable(RE::Actor* a_target);
+
+	private:
+		static unsigned long long HasSpell(RE::Actor* a_target, RE::MagicItem* a_spell);
+
+		inline static REL::Relocation<decltype(&HasSpell)> _hasSpell;
+	};
 }

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Exit-9B/CustomSkills/main/docs/schema/skill.json",
+  "id": "Adventuring",
+  "name": "$Adventuring_Name",
+  "description": "$Adventuring_Description",
+  "level": "Armillary.esp|06FE79",
+  "ratio": "Armillary.esp|06FE7A",
+  "legendary": "Armillary.esp|06FE7B",
+  "experienceFormula": {
+    "useMult": 7.0,
+    "useOffset": 0.0,
+    "improveMult": 0.5,
+    "improveOffset": 120.0,
+    "enableXPPerRank": true
+  },
+  "nodes": [
+  ]
+}

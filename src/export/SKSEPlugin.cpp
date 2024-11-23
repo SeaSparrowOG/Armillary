@@ -4,6 +4,7 @@
 #include "Papyrus/papyrus.h"
 #include "runtimePatcher/runtimePatcher.h"
 #include "serialization/serialization.h"
+#include "maintenance/maintenance.h"
 
 namespace
 {
@@ -71,7 +72,11 @@ static void MessageEventCallback(SKSE::MessagingInterface::Message* a_msg)
 		Data::ModObjectManager::Instance().Reload();
 		RuntimePatcher::PatchAllForms();
 		Events::Install();
+		Maintenance::Manager::GetSingleton()->Initialize();
 		break;
+	case SKSE::MessagingInterface::kNewGame:
+	case SKSE::MessagingInterface::kPostLoadGame:
+		Maintenance::Manager::GetSingleton()->LoadMaintenance();
 	default:
 		break;
 	}
@@ -83,7 +88,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	logger::info("{} v{}"sv, Plugin::NAME, Plugin::VERSION.string());
 
 	SKSE::Init(a_skse);
-	SKSE::AllocTrampoline(98);
+	SKSE::AllocTrampoline(200);
 
 	const auto ver = a_skse->RuntimeVersion();
 	if (ver < SKSE::RUNTIME_1_6_1130) {
