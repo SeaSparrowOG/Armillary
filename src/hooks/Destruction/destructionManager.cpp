@@ -80,6 +80,69 @@ namespace
 			}
 		}
 	}
+
+	void ProcessAtronachHit(RE::Projectile* a_this, RE::TESObjectREFR* a_hit) {
+		const auto spell = a_this ? a_this->spell : nullptr;
+		const auto hitActor = a_hit ? a_hit->As<RE::Actor>() : nullptr;
+		const auto commanded = hitActor ? hitActor->IsCommandedActor() : false;
+		const auto sourceActor = a_this && a_this->GetActorCause() ? a_this->GetActorCause()->actor.get().get() : nullptr;
+		const auto magicCaster = sourceActor ? sourceActor->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant) : nullptr;
+		const auto friendlyFire = commanded && sourceActor ? sourceActor == hitActor->GetCommandingActor().get() && !sourceActor->IsHostileToActor(hitActor) : false;
+
+		if (friendlyFire && spell && hitActor && magicCaster) {
+			const auto perk = Data::ModObject<RE::BGSPerk>("ARM_Conjuration_PRK_025_FriendlyFire");
+			assert(perk);
+			if (perk && sourceActor->HasPerk(perk)) {
+				const auto fireResist = hitActor->GetActorValue(RE::ActorValue::kResistFire);
+				const auto frostResist = hitActor->GetActorValue(RE::ActorValue::kResistFrost);
+				const auto shockResist = hitActor->GetActorValue(RE::ActorValue::kResistShock);
+
+				bool fire = false;
+				bool frost = false;
+				bool shock = false;
+				const auto fireKwd = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicDamageFire");
+				const auto frostKwd = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicDamageFrost");
+				const auto shockKwd = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicDamageShock");
+				assert(fireKwd && frostKwd && shockKwd);
+
+				if (fireKwd && frostKwd && shockKwd) {
+					for (const auto effect : spell->effects) {
+						if (!effect->baseEffect) {
+							continue;
+						}
+
+						const auto baseEffect = effect->baseEffect;
+						if (baseEffect->HasKeyword(fireKwd)) {
+							fire = true;
+						}
+						if (baseEffect->HasKeyword(frostKwd)) {
+							frost = true;
+						}
+						if (baseEffect->HasKeyword(shockKwd)) {
+							shock = true;
+						}
+					}
+				}
+
+				const auto fireFriendly = Data::ModObject<RE::SpellItem>("ARM_Conjuration_SPL_FriendlyFire");
+				const auto frostFriendly = Data::ModObject<RE::SpellItem>("ARM_Conjuration_SPL_FriendlyFrost");
+				const auto shockFriendly = Data::ModObject<RE::SpellItem>("ARM_Conjuration_SPL_FriendlyShock");
+				assert(fireFriendly && frostFriendly && shockFriendly);
+
+				if (fireFriendly && fire && fireResist >= 100.0f) {
+					magicCaster->CastSpellImmediate(fireFriendly, false, hitActor, 1.0f, false, 0.0f, sourceActor);
+				}
+
+				if (frostFriendly && frost && frostResist >= 100.0f) {
+					magicCaster->CastSpellImmediate(frostFriendly, false, hitActor, 1.0f, false, 0.0f, sourceActor);
+				}
+
+				if (shockFriendly && shock && shockResist >= 100.0f) {
+					magicCaster->CastSpellImmediate(shockFriendly, false, hitActor, 1.0f, false, 0.0f, sourceActor);
+				}
+			}
+		}
+	}
 }
 namespace Hooks::Destruction
 {
@@ -105,6 +168,7 @@ namespace Hooks::Destruction
 
 	bool DestructionManager::ProcessSpellCollision(RE::Projectile* a_this, RE::TESObjectREFR* a_hit, void* a3, void* a4, int a5, void* a6, void* a7)
 	{
+		ProcessAtronachHit(a_this, a_hit);
 		ProcessHit(a_this, a_hit);
 		return _processSpellCollision(a_this, a_hit, a3, a4, a5, a6, a7);
 	}
@@ -115,6 +179,7 @@ namespace Hooks::Destruction
 		const auto isConc = thisSpell ? thisSpell->GetCastingType() == RE::MagicSystem::CastingType::kConcentration : true;
 
 		if (!isConc) {
+			ProcessAtronachHit(a_this, a_hit);
 			ProcessHit(a_this, a_hit);
 		}
 		return _processSpellCollisionBeam(a_this, a_hit, a3, a4, a5, a6, a7);

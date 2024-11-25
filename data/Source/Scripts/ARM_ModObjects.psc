@@ -48,6 +48,26 @@ Perk Property ARM_Armor_PRK_100_Unbreakable Auto
 Keyword Property ARM_Armor_KWD_HeavyCuirass Auto 
 Keyword Property ARM_Armor_KWD_LightCuirass Auto 
 Keyword Property ARM_Armor_KWD_ClothingCuirass Auto 
+
+;/
+Conjuration related objects
+/;
+Keyword Property ARM_Conjuration_KWD_BoundWeapon Auto
+
+Perk Property ARM_Conjuration_PRK_025_FriendlyFire Auto 
+Perk Property ARM_Conjuration_PRK_050_Gatekeeper Auto 
+Perk Property ARM_Conjuration_PRK_060_PartingGift Auto 
+
+Spell Property ARM_Conjuration_SPL_FriendlyFire Auto
+Spell Property ARM_Conjuration_SPL_FriendlyFrost Auto
+Spell Property ARM_Conjuration_SPL_FriendlyShock Auto
+
+Spell Property ARM_Conjuration_SPL_GatekeeperFire Auto
+Spell Property ARM_Conjuration_SPL_GatekeeperFrost Auto
+Spell Property ARM_Conjuration_SPL_GatekeeperShock Auto
+
+Spell Property ARM_Conjuration_SPL_PartingGiftProc Auto
+
 ;/
 Destruction related objects
 /;
