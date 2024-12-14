@@ -3,6 +3,7 @@
 #include "runtimePatcher/Common/destructionPatcher.h"
 #include "runtimePatcher/Common/weaponPatcher.h"
 #include "runtimePatcher/Common/armorPatcher.h"
+#include "runtimePatcher/Common/spellPatcher.h"
 
 namespace RuntimePatcher
 {
@@ -11,5 +12,6 @@ namespace RuntimePatcher
 		Armor::Patch();
 		Weapons::Patch();
 		CloakSpells::Patch();
+		Spells::Patch();
 	}
 }

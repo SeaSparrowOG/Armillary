@@ -48,9 +48,33 @@ Perk Property ARM_Armor_PRK_100_Unbreakable Auto
 Keyword Property ARM_Armor_KWD_HeavyCuirass Auto 
 Keyword Property ARM_Armor_KWD_LightCuirass Auto 
 Keyword Property ARM_Armor_KWD_ClothingCuirass Auto 
+
 ;/
-Destruction related objects
+==================================================================
+C O N J U R A T I O N
+==================================================================
 /;
+
+ActorBase Property ARM_Conjuration_NPC_InvisibleNPC Auto 
+ActorBase Property ARM_Conjuration_NPC_InvisibleNPCEdgeOfOblivion Auto 
+
+Keyword Property ARM_Conjuration_KWD_BoundWeapon Auto
+
+Perk Property ARM_Conjuration_PRK_080_VoraciousEdge Auto 
+Perk Property ARM_Conjuration_PRK_080_EdgeOfOblivion Auto
+
+MagicEffect Property ARM_Conjuration_MGF_VoraciousBladeHealth Auto
+MagicEffect Property ARM_Conjuration_MGF_EdgeOfOblivionArmor Auto 
+MagicEffect Property ARM_Conjuration_MGF_EdgeOfOblivionMagicResist Auto 
+MagicEffect Property ARM_Conjuration_MGF_ConjureBoundWeapon Auto 
+MagicEffect Property ARM_Conjuration_MGF_ConjureBoundWeaponEdgeOfOblivion Auto
+
+;/
+==================================================================
+Destruction related objects
+==================================================================
+/;
+
 Keyword Property ARM_Destruction_KWD_MagicCloakFire Auto
 {Automatically distributed to flame cloak spells at startup.}
 Keyword Property ARM_Destruction_KWD_MagicCloakFrost Auto
