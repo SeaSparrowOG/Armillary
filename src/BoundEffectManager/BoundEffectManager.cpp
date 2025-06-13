@@ -202,7 +202,7 @@ namespace BoundEffectManager {
 			bool bindsMagicka = base->HasKeyword(bindMagickaKeyword);
 
 			bool binds = bindsHealth || bindsStamina || bindsMagicka;
-			if (binds && effect->conditions.IsTrue(caster, target) && base->conditions.IsTrue(caster, target)) {
+			if (binds && IsBindingEffectApplicable(base, a_effect->flags.any(RE::ActiveEffect::Flag::kDual))) {
 				hasValidBinding = true;
 				if (bindsHealth) {
 					demandHealth += effect->GetMagnitude();
