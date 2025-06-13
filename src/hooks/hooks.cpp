@@ -1,5 +1,6 @@
 #include "Hooks/hooks.h"
 
+#include "ActiveEffect/ActiveEffectHooks.h"
 #include "MagicCaster/MagicCasterHooks.h"
 #include "MagicTarget/MagicTargetHooks.h"
 
@@ -10,6 +11,9 @@ namespace Hooks {
 
 		bool result = true;
 
+		if (!ActiveEffect::Install()) {
+			result = false;
+		}
 		if (!MagicCaster::Install()) {
 			result = false;
 		}

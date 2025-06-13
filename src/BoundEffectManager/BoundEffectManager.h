@@ -18,6 +18,8 @@ namespace BoundEffectManager
 		void ProcessEffectAdded(RE::ActiveEffect* a_effect);
 		void ProcessEffectRemoved(RE::ActiveEffect* a_effect);
 
+		bool IsBoundEffect(RE::ActiveEffect* a_effect); 
+
 		bool Save(SKSE::SerializationInterface* a_intfc) override;
 		bool Load(SKSE::SerializationInterface* a_intfc) override;
 		void Revert(SKSE::SerializationInterface* a_intfc) override;

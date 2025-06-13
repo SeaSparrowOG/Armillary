@@ -292,6 +292,10 @@ namespace BoundEffectManager {
 		}
 	}
 
+	bool BoundEffectManager::IsBoundEffect(RE::ActiveEffect* a_effect) {
+		return costliestBindings.contains(a_effect) || boundEffects.contains(a_effect);
+	}
+
 	RE::EffectSetting* BoundEffectManager::GetCostliestValidEffect(RE::MagicItem* a_spell) {
 		auto& appliedSpellEffects = a_spell->effects;
 		float lastCostliestCost = -1.0f;
