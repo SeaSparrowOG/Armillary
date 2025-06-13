@@ -1,9 +1,22 @@
 #include "Hooks/hooks.h"
 
+#include "MagicCaster/MagicCasterHooks.h"
+#include "MagicTarget/MagicTargetHooks.h"
+
 namespace Hooks {
 	bool Install() {
 		SECTION_SEPARATOR;
 		logger::info("Installing hooks..."sv);
-		return true;
+
+		bool result = true;
+
+		if (!MagicCaster::Install()) {
+			result = false;
+		}
+		if (!MagicTarget::Install()) {
+			result = false;
+		}
+
+		return result;
 	}
 }

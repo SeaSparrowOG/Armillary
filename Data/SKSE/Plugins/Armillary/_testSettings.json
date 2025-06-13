@@ -1,0 +1,13 @@
+{
+  "MinimumVersion": 1,
+  "PatchSpells": {
+    "AddEffect": [
+      {
+        "Effect": "Armillary.esm|0xD68",
+        "Spell": "Skyrim.esm|0x204C3",
+        "Duration": 60,
+        "Magnitude": 50.0
+      }
+    ]
+  }
+}

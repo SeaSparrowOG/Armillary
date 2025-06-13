@@ -15,6 +15,8 @@ namespace Settings
 
 		private:
 			bool ReadConfig(const Json::Value& a_entry);
+			bool ReadPatchSpells(const Json::Value& a_entry);
+			bool ReadPatchSpellsAddEffect(const Json::Value& a_entry);
 
 			RE::TESDataHandler* dataHandler{ nullptr };
 			// Helper functions
@@ -78,9 +80,46 @@ namespace Settings
 				auto* intermediate = RE::TESForm::LookupByEditorID(a_str);
 				return intermediate ? skyrim_cast<T*>(intermediate) : nullptr;
 			}
+
+			template <typename T>
+			bool AddMultipleFormsToVector(const Json::Value& a_json, std::vector<T*>& a_result) {
+				if (a_json.isString()) {
+					auto* form = GetFormFromString<T>(a_json.asString());
+					if (form) {
+						a_result.push_back(form);
+					}
+				}
+				else if (a_json.isArray()) {
+					a_result.reserve(a_json.size());
+					for (const auto& element : a_json) {
+						if (!element.isString()) {
+							logger::error("      >Non-string found where a string was expected."sv);
+							return false;
+						}
+						auto* form = GetFormFromString<T>(element.asString());
+						LOG_DEBUG("Got entry: {} from array."sv, form ? form->GetName() : "MISSING");
+						if (form) {
+							a_result.push_back(form);
+						}
+					}
+				}
+				else {
+					logger::info("      >Got non-array and non-string when either was expected."sv);
+					return false;
+				}
+				return true;
+			}
 		};
 
 		inline static constexpr std::uint8_t PARSER_VERSION = 1;
 		inline static constexpr const char* MINIMUM_VERSION_FIELD = "MinimumVersion";
+
+		inline static constexpr const char* PATCH_SPELL_FIELD = "PatchSpells";
+		inline static constexpr const char* PATCH_SPELL_FIELD_ADD_EFFECT = "AddEffect";
+		inline static constexpr const char* PATCH_SPELL_FIELD_ADD_EFFECT_BASE = "Effect";
+		inline static constexpr const char* PATCH_SPELL_FIELD_ADD_EFFECT_SPELL = "Spell";
+		inline static constexpr const char* PATCH_SPELL_FIELD_ADD_EFFECT_MAG = "Magnitude";
+		inline static constexpr const char* PATCH_SPELL_FIELD_ADD_EFFECT_DUR = "Duration";
+		inline static constexpr const char* PATCH_SPELL_FIELD_ADD_EFFECT_AREA = "Area";
 	}
 }

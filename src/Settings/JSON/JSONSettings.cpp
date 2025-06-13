@@ -14,6 +14,11 @@ namespace Settings::JSON
 
 	bool Reader::Read()
 	{
+		dataHandler = RE::TESDataHandler::GetSingleton();
+		if (!dataHandler) {
+			logger::critical("  >Failed to cache DataHandler singleton."sv);
+			return false;
+		}
 		std::string jsonFolder = fmt::format(R"(.\Data\SKSE\Plugins\{})"sv, Plugin::NAME);
 		logger::info("  >Settings folder: {}."sv, jsonFolder);
 		if (!std::filesystem::exists(jsonFolder)) {
@@ -86,6 +91,160 @@ namespace Settings::JSON
 			if (PARSER_VERSION < sanitizedVer) {
 				logger::warn("      >Config requires parser version {}, but the current parser is version {}."sv, sanitizedVer, PARSER_VERSION);
 				return false;
+			}
+		}
+		auto& patchSpellsEntry = a_json[PATCH_SPELL_FIELD];
+		if (patchSpellsEntry && !ReadPatchSpells(patchSpellsEntry)) {
+			return false;
+		}
+		return true;
+	}
+
+	bool Reader::ReadPatchSpells(const Json::Value& a_entry) {
+		if (!a_entry.isObject()) {
+			logger::error("      >Config has {} specified, but it is not an object."sv, PATCH_SPELL_FIELD);
+			return false;
+		}
+		auto& addEffectField = a_entry[PATCH_SPELL_FIELD_ADD_EFFECT];
+		if (addEffectField && !ReadPatchSpellsAddEffect(addEffectField)) {
+			return false;
+		}
+		return true;
+	}
+
+	bool Reader::ReadPatchSpellsAddEffect(const Json::Value& a_entry) {
+		if (!a_entry.isArray()) {
+			logger::error("      >Config has {} specified, but it is not an array."sv, PATCH_SPELL_FIELD_ADD_EFFECT);
+			return false;
+		}
+		for (const auto& spellPatch : a_entry) {
+			if (!spellPatch.isObject()) {
+				logger::error("      >Config has {} specified, but at least one of its contents is not an object."sv, PATCH_SPELL_FIELD_ADD_EFFECT);
+				return false;
+			}
+
+			auto& base = spellPatch[PATCH_SPELL_FIELD_ADD_EFFECT_BASE];
+			if (!base) {
+				logger::error("      >Config has {} specified, but is missing a base effect definition."sv, PATCH_SPELL_FIELD_ADD_EFFECT_BASE);
+				return false;
+			}
+			auto& spellField = spellPatch[PATCH_SPELL_FIELD_ADD_EFFECT_SPELL];
+			if (!spellField) {
+				logger::error("      >Config has {} specified, but is missing a base spell definition."sv, PATCH_SPELL_FIELD_ADD_EFFECT_BASE);
+				return false;
+			}
+
+			auto& magField = spellPatch[PATCH_SPELL_FIELD_ADD_EFFECT_MAG];
+			float mag = 0.0f;
+			if (magField) {
+				if (!magField.isDouble()) {
+					logger::error("      >Config has {}/{} specified, but it is not a float."sv, PATCH_SPELL_FIELD_ADD_EFFECT_BASE, PATCH_SPELL_FIELD_ADD_EFFECT_MAG);
+					return false;
+				}
+				mag = std::max(0.0f, magField.asFloat());
+			}
+
+			auto& areaField = spellPatch[PATCH_SPELL_FIELD_ADD_EFFECT_AREA];
+			uint32_t area = 0;
+			if (areaField) {
+				if (!areaField.isInt()) {
+					logger::error("      >Config has {}/{} specified, but it is not an integer."sv, PATCH_SPELL_FIELD_ADD_EFFECT_BASE, PATCH_SPELL_FIELD_ADD_EFFECT_AREA);
+					return false;
+				}
+
+				auto rawInt = areaField.asInt();
+				area = std::numeric_limits<uint32_t>::max() > rawInt ?
+					0 < rawInt ?
+					static_cast<uint32_t>(rawInt) :
+					std::numeric_limits<uint32_t>::min() :
+					std::numeric_limits<uint32_t>::max();
+			}
+
+			auto& durField = spellPatch[PATCH_SPELL_FIELD_ADD_EFFECT_DUR];
+			uint32_t dur = 0;
+			if (durField) {
+				if (!durField.isInt()) {
+					logger::error("      >Config has {}/{} specified, but it is not an integer."sv, PATCH_SPELL_FIELD_ADD_EFFECT_BASE, PATCH_SPELL_FIELD_ADD_EFFECT_DUR);
+					return false;
+				}
+
+				auto rawInt = durField.asInt();
+				dur = std::numeric_limits<uint32_t>::max() > rawInt ?
+					0 < rawInt ?
+					static_cast<uint32_t>(rawInt) :
+					std::numeric_limits<uint32_t>::min() :
+					std::numeric_limits<uint32_t>::max();
+			}
+
+			auto spellsToModify = std::vector<RE::SpellItem*>();
+			auto effectsToAdd = std::vector<RE::EffectSetting*>();
+			if (!AddMultipleFormsToVector(base, effectsToAdd)) {
+				return false;
+			}
+			if (!AddMultipleFormsToVector(spellField, spellsToModify)) {
+				return false;
+			}
+			if (spellsToModify.empty() || effectsToAdd.empty()) {
+				continue;
+			}
+
+			auto* effectFactory = RE::IFormFactory::GetConcreteFormFactoryByType<RE::EffectSetting>();
+			if (!effectFactory) {
+				logger::critical("      >Internal error: Failed to get Effect Setting Form Factory from the game."sv);
+				return false;
+			}
+
+			for (auto* spell : spellsToModify) {
+				auto delivery = spell->GetDelivery();
+				auto casting = spell->GetCastingType();
+				for (auto* effect : effectsToAdd) {
+					using AMEFlag = RE::EffectSetting::EffectSettingData::Flag;
+
+					auto* newEffect = effectFactory->Create();
+					if (!newEffect) {
+						logger::critical("      >Internal error: Form factory failed to create new effect."sv);
+						return false;
+					}
+
+					newEffect->data = effect->data;
+					newEffect->data.delivery = delivery;
+					newEffect->data.castingType = casting;
+
+					newEffect->conditions = effect->conditions;
+					newEffect->counterEffects = effect->counterEffects;
+					newEffect->effectSounds = effect->effectSounds;
+					newEffect->fullName = effect->fullName;
+					newEffect->keywords = effect->keywords;
+					newEffect->magicItemDescription = effect->magicItemDescription;
+					newEffect->menuDispObject = effect->menuDispObject;
+					newEffect->numKeywords = effect->numKeywords;
+					newEffect->filterValidationFunction = effect->filterValidationFunction;
+					newEffect->filterValidationItem = effect->filterValidationItem;
+
+					auto* toAppend = new RE::Effect();
+					toAppend->baseEffect = newEffect;
+					toAppend->conditions = RE::TESCondition();
+					toAppend->cost = 0.0f;
+					if (effect->data.flags.any(AMEFlag::kNoArea)) {
+						toAppend->effectItem.area = 0u;
+					}
+					else {
+						toAppend->effectItem.area = area;
+					}
+					if (effect->data.flags.any(AMEFlag::kNoDuration)) {
+						toAppend->effectItem.duration = 0u;
+					}
+					else {
+						toAppend->effectItem.duration = dur;
+					}
+					if (effect->data.flags.any(AMEFlag::kNoMagnitude)) {
+						toAppend->effectItem.magnitude = 0.0f;
+					}
+					else {
+						toAppend->effectItem.magnitude = mag;
+					}
+					spell->effects.push_back(toAppend);
+				}
 			}
 		}
 		return true;
