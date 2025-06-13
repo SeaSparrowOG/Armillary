@@ -271,7 +271,7 @@ namespace BoundEffectManager {
 		if (costliestBindings.contains(a_effect)) {
 			auto& toClear = costliestBindings.at(a_effect);
 			for (auto& element : toClear) {
-				switch (element.attribute.first) {
+				switch (element.attribute) {
 				case RE::ActorValue::kHealth:
 					totalHealthBound -= element.ammount;
 					break;
@@ -296,22 +296,21 @@ namespace BoundEffectManager {
 		return costliestBindings.contains(a_effect) || boundEffects.contains(a_effect);
 	}
 
-	RE::EffectSetting* BoundEffectManager::GetCostliestValidEffect(RE::MagicItem* a_spell) {
-		auto& appliedSpellEffects = a_spell->effects;
-		float lastCostliestCost = -1.0f;
-		RE::EffectSetting* costliestEffect = nullptr;
-		for (const auto* effect : appliedSpellEffects) {
-			auto* base = effect ? effect->baseEffect : nullptr;
-			if (!base) {
-				continue;
+	void BoundEffectManager::UpdateTimePassed(float a_delta) {
+		timeElapsed += abs(a_delta); // this is unecessary, delta is always positive.
+		if (timeElapsed >= 0.3f) {
+			if (queued) {
+				timeElapsed = 0.0f;
+				return;
 			}
-			if (!effect->conditions.IsTrue(player, player) || !base->conditions.IsTrue(player, player)) {
-				continue;
+			queued = true;
+			auto* taskInterface = SKSE::GetTaskInterface();
+			if (taskInterface) {
+				taskInterface->AddTask([&]() {
+					UpdateUI();
+					});
 			}
-			lastCostliestCost = effect->cost;
-			costliestEffect = base;
 		}
-		return costliestEffect;
 	}
 
 	bool BoundEffectManager::HasEnoughOfAttributeToBind(RE::ActorValue a_av, float a_demand) {
@@ -339,5 +338,38 @@ namespace BoundEffectManager {
 			head = head->next;
 		}
 		return true;
+	}
+
+	void BoundEffectManager::UpdateUI() {
+		float baseHealth = player->GetBaseActorValue(RE::ActorValue::kHealth);
+		float currentHealth = baseHealth +
+			player->GetActorValueModifier(RE::ACTOR_VALUE_MODIFIER::kPermanent, RE::ActorValue::kHealth);
+		float healthRatio = std::clamp(currentHealth / baseHealth * 100.0f, 0.0f, 100.0f);
+
+		float baseStamina = player->GetBaseActorValue(RE::ActorValue::kStamina);
+		float currentStamina = baseStamina +
+			player->GetActorValueModifier(RE::ACTOR_VALUE_MODIFIER::kPermanent, RE::ActorValue::kStamina);
+		float staminaRatio = std::clamp(currentStamina / baseStamina * 100.0f, 0.0f, 100.0f);
+
+		float baseMagicka = player->GetBaseActorValue(RE::ActorValue::kMagicka);
+		float currentMagicka = baseMagicka +
+			player->GetActorValueModifier(RE::ACTOR_VALUE_MODIFIER::kPermanent, RE::ActorValue::kMagicka);
+		float magickaRatio = std::clamp(currentMagicka / baseMagicka * 100.0f, 0.0f, 100.0f);
+
+		auto* healthGlobal = RE::TESForm::LookupByEditorID<RE::TESGlobal>("Survival_ColdAttributePenaltyPercent"sv);
+		auto* staminaGlobal = RE::TESForm::LookupByEditorID<RE::TESGlobal>("Survival_HungerAttributePenaltyPercent"sv);
+		auto* magickaGlobal = RE::TESForm::LookupByEditorID<RE::TESGlobal>("Survival_ExhaustionAttributePenaltyPercent"sv);
+
+		if (healthGlobal) {
+			healthGlobal->value = 100.0f - healthRatio;
+		}
+		if (staminaGlobal) {
+			staminaGlobal->value = 100.0f - staminaRatio;
+		}
+		if (magickaGlobal) {
+			magickaGlobal->value = 100.0f - magickaRatio;
+		}
+		timeElapsed = 0.0f;
+		queued = false;
 	}
 }

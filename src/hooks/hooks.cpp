@@ -3,6 +3,7 @@
 #include "ActiveEffect/ActiveEffectHooks.h"
 #include "MagicCaster/MagicCasterHooks.h"
 #include "MagicTarget/MagicTargetHooks.h"
+#include "PlayerCharacter/PlayerCharacterHooks.h"
 
 namespace Hooks {
 	bool Install() {
@@ -18,6 +19,9 @@ namespace Hooks {
 			result = false;
 		}
 		if (!MagicTarget::Install()) {
+			result = false;
+		}
+		if (!PlayerCharacter::Install()) {
 			result = false;
 		}
 

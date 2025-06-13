@@ -6,7 +6,7 @@ namespace BoundEffectManager
 {
 	bool Initialize();
 
-	class BoundEffectManager :
+	class BoundEffectManager final :
 		public REX::Singleton<BoundEffectManager>,
 		public Serialization::SerializationManager::Serializable
 	{
@@ -20,36 +20,37 @@ namespace BoundEffectManager
 
 		bool IsBoundEffect(RE::ActiveEffect* a_effect); 
 
+		void UpdateTimePassed(float a_delta);
+
 		bool Save(SKSE::SerializationInterface* a_intfc) override;
 		bool Load(SKSE::SerializationInterface* a_intfc) override;
 		void Revert(SKSE::SerializationInterface* a_intfc) override;
-	private:
-		RE::EffectSetting* GetCostliestValidEffect(RE::MagicItem* a_spell);
 
+	private:
 		bool HasEnoughOfAttributeToBind(RE::ActorValue a_av, float a_demand);
 		bool IsBindingEffectApplicable(const RE::EffectSetting* a_effect, bool a_dualCast);
+		void UpdateUI();
 
-		using BindableAttribute = std::pair<RE::ActorValue, RE::ActorValue>;
 
 		struct BoundAttribute
 		{
 			float ammount{ 0.0f };
-			BindableAttribute attribute{ RE::ActorValue::kMagicka, RE::ActorValue::kVariable04 };
+			RE::ActorValue attribute{ RE::ActorValue::kNone };
 
 			void Restore(RE::PlayerCharacter* a_player) {
-				a_player->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kPermanent, attribute.first, ammount);
-				a_player->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kPermanent, attribute.second, -ammount);
-				attribute = { RE::ActorValue::kNone, RE::ActorValue::kNone };
+				a_player->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kPermanent, attribute, ammount);
+				attribute = RE::ActorValue::kNone ;
 				ammount = 0.0f;
 			}
 
 			void Bind(RE::PlayerCharacter* a_player) const {
-				a_player->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, attribute.first, ammount);
-				a_player->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kPermanent, attribute.first, -ammount);
-				a_player->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kPermanent, attribute.second, +ammount);
+				a_player->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, attribute, ammount);
+				a_player->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kPermanent, attribute, -ammount);
 			}
 		};
 
+		bool queued{ false };
+		float timeElapsed{ 0.0f };
 		float totalHealthBound{ 0.0f };
 		float totalStaminaBound{ 0.0f };
 		float totalMagickaBound{ 0.0f };
@@ -63,12 +64,9 @@ namespace BoundEffectManager
 		RE::PlayerCharacter* player{ nullptr };
 		inline static constexpr uint32_t RecordType{ 'BEFM' };
 
-		inline static constexpr const BindableAttribute magickaBinding
-			= { RE::ActorValue::kMagicka, RE::ActorValue::kVariable04 };
-		inline static constexpr const BindableAttribute staminaBinding
-			= { RE::ActorValue::kStamina, RE::ActorValue::kVariable04 };
-		inline static constexpr const BindableAttribute healthBinding
-			= { RE::ActorValue::kHealth, RE::ActorValue::kVariable04 };
+		inline static constexpr const RE::ActorValue magickaBinding = RE::ActorValue::kMagicka;
+		inline static constexpr const RE::ActorValue staminaBinding = RE::ActorValue::kStamina;
+		inline static constexpr const RE::ActorValue healthBinding = RE::ActorValue::kHealth;
 	};
 
 	inline static constexpr const char* BindHealthKeywordID = "ARM_KEYW_Framework_BindHealthKeyword";
