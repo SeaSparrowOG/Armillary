@@ -19,6 +19,11 @@ namespace ConditionManager
 		bool nominal = true;
 		logger::info("  >Caching mod objects..."sv);
 
+		conjuredCount = Data::ModObject<RE::TESBoundObject>(conjuredCountID);
+		if (!conjuredCount) {
+			logger::critical("    >Failed to cache {}", conjuredCountID);
+			nominal = false;
+		}
 		totalCount = Data::ModObject<RE::TESBoundObject>(totalCountID);
 		if (!totalCount) {
 			logger::critical("    >Failed to cache {}", totalCountID);
@@ -74,11 +79,11 @@ namespace ConditionManager
 		return true;
 	}
 
-	bool ConditionManager::SubstituteItemCount(RE::TESBoundObject* a_obj, 
+	bool ConditionManager::SubstituteItemCount(RE::TESBoundObject* a_obj,
 		RE::TESObjectREFR* a_ref,
-		uint32_t& a_out)
+		int32_t& a_out)
 	{
-		auto* asActor = a_ref && a_ref->IsActor() ? a_ref->As<RE::Actor>() : nullptr;
+		auto* asActor = a_ref ? a_ref->As<RE::Actor>() : nullptr;
 		auto* asMiddleHigh = asActor ? asActor->GetMiddleHighProcess() : nullptr;
 		if (!asMiddleHigh || !a_obj) {
 			return false;
@@ -88,13 +93,23 @@ namespace ConditionManager
 		if (commandedActors.empty()) {
 			return false;
 		}
-		if (totalCount == a_obj) {
+
+		if (conjuredCount == a_obj) {
 			for (const auto actorData : commandedActors) {
 				auto* actor = actorData.commandedActor ? actorData.commandedActor.get().get() : nullptr;
 				if (!actor) {
 					continue;
 				}
-				a_out += actor->IsSummoned() || actor->IsReanimated() ? 1u : 0u;
+				a_out += actor->IsSummoned() ? 1 : 0;
+			}
+		}
+		else if (totalCount == a_obj) {
+			for (const auto actorData : commandedActors) {
+				auto* actor = actorData.commandedActor ? actorData.commandedActor.get().get() : nullptr;
+				if (!actor) {
+					continue;
+				}
+				a_out += actor->IsSummoned() || actor->IsReanimated() ? 1 : 0;
 			}
 		}
 		else if (fireCount == a_obj) {
@@ -104,7 +119,7 @@ namespace ConditionManager
 				if (!avOwner || !(actor->IsSummoned() || actor->IsReanimated())) {
 					continue;
 				}
-				a_out += avOwner->GetActorValue(RE::ActorValue::kResistFire) >= 100.0f ? 1u : 0u;
+				a_out += avOwner->GetActorValue(RE::ActorValue::kResistFire) >= 100.0f ? 1 : 0;
 			}
 		}
 		else if (frostCount == a_obj) {
@@ -114,7 +129,7 @@ namespace ConditionManager
 				if (!avOwner || !(actor->IsSummoned() || actor->IsReanimated())) {
 					continue;
 				}
-				a_out += avOwner->GetActorValue(RE::ActorValue::kResistFrost) >= 100.0f ? 1u : 0u;
+				a_out += avOwner->GetActorValue(RE::ActorValue::kResistFrost) >= 100.0f ? 1 : 0;
 			}
 		}
 		else if (shockCount == a_obj) {
@@ -124,14 +139,14 @@ namespace ConditionManager
 				if (!avOwner || !(actor->IsSummoned() || actor->IsReanimated())) {
 					continue;
 				}
-				a_out += avOwner->GetActorValue(RE::ActorValue::kResistShock) >= 100.0f ? 1u : 0u;
+				a_out += avOwner->GetActorValue(RE::ActorValue::kResistShock) >= 100.0f ? 1 : 0;
 			}
 		}
 		else if (untypedCount == a_obj) {
 			for (const auto actorData : commandedActors) {
 				auto* actor = actorData.commandedActor ? actorData.commandedActor.get().get() : nullptr;
 				auto* avOwner = actor ? actor->As<RE::ActorValueOwner>() : nullptr;
-				if (!avOwner || !(actor->IsSummoned() || actor->IsReanimated())) {
+				if (!avOwner || !actor->IsSummoned()) {
 					continue;
 				}
 				a_out += avOwner->GetActorValue(RE::ActorValue::kResistFire) < 100.0f &&
@@ -149,7 +164,7 @@ namespace ConditionManager
 				if (!isUndead || !actor->IsSummoned()) {
 					continue;
 				}
-				++a_out;
+				a_out += 1u;
 			}
 		}
 		else if (reanimatedCount == a_obj) {
@@ -158,7 +173,7 @@ namespace ConditionManager
 				if (!actor) {
 					continue;
 				}
-				a_out += actor->IsReanimated() ? 1u : 0u;
+				a_out += actor->IsReanimated() ? 1 : 0;
 			}
 		}
 		else {

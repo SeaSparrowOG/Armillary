@@ -22,14 +22,14 @@ namespace Hooks::Conditions
 		return true;
 	}
 
-	inline uint32_t GetActorItemCountHook::GetItemCount(RE::TESBoundObject* a_item, 
-		RE::TESObjectREFR* a_containerRef) 
+	inline int32_t GetActorItemCountHook::GetItemCount(RE::InventoryChanges* a_inv, RE::TESBoundObject* a_obj) 
 	{
-		uint32_t response = 0;
+		int32_t out = 0;
+		auto* owner = a_inv && a_inv->owner ? a_inv->owner : nullptr;
 		auto* manager = ConditionManager::ConditionManager::GetSingleton();
-		if (manager && manager->SubstituteItemCount(a_item, a_containerRef, response)) {
-			return response;
+		if (manager && owner && manager->SubstituteItemCount(a_obj, owner, out)) {
+			return out;
 		}
-		return _getItemCount(a_item, a_containerRef);
+		return _getItemCount(a_inv, a_obj);
 	}
 }

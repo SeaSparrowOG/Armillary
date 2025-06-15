@@ -9,10 +9,11 @@ namespace ConditionManager
 	public:
 		bool Initialize();
 
-		bool SubstituteItemCount(RE::TESBoundObject* a_obj, RE::TESObjectREFR* a_ref, uint32_t& a_out);
+		bool SubstituteItemCount(RE::TESBoundObject* a_obj, RE::TESObjectREFR* a_ref, int32_t& a_out);
 	
 	private:
 		RE::TESBoundObject* totalCount{ nullptr };
+		RE::TESBoundObject* conjuredCount{ nullptr };
 		RE::TESBoundObject* fireCount{ nullptr };
 		RE::TESBoundObject* frostCount{ nullptr };
 		RE::TESBoundObject* shockCount{ nullptr };
@@ -30,4 +31,5 @@ namespace ConditionManager
 	inline static constexpr const char* untypedCountID = "ARM_AMMO_Framework_UntypedConjuredCount";
 	inline static constexpr const char* conjuredUndeadCountID = "ARM_AMMO_Framework_UndeadConjuredCount";
 	inline static constexpr const char* reanimatedCountID = "ARM_AMMO_Framework_ReanimatedCount";
+	inline static constexpr const char* conjuredCountID = "ARM_AMMO_Framework_ConjuredCount";
 }

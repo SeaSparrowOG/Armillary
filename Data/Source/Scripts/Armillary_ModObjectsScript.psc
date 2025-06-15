@@ -1,5 +1,6 @@
 Scriptname Armillary_ModObjectsScript Extends Quest
 
+Ammo Property ARM_AMMO_Framework_ConjuredCount Auto
 Ammo Property ARM_AMMO_Framework_ConjuredReanimatedCount Auto
 Ammo Property ARM_AMMO_Framework_FireConjuredCount Auto
 Ammo Property ARM_AMMO_Framework_FrostConjuredCount Auto

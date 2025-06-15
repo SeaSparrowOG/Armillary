@@ -9,7 +9,7 @@ namespace Hooks
 		struct GetActorItemCountHook
 		{
 			inline static bool Install();
-			inline static uint32_t GetItemCount(RE::TESBoundObject* a_item, RE::TESObjectREFR* a_containerRef);
+			inline static int32_t GetItemCount(RE::InventoryChanges* a_inv, RE::TESBoundObject* a_obj);
 			inline static REL::Relocation<decltype(GetItemCount)> _getItemCount;
 		};
 	}
