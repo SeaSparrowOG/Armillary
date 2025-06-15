@@ -1,0 +1,13 @@
+Scriptname Armillary_ModObjectsScript Extends Quest
+
+Ammo Property ARM_AMMO_Framework_ConjuredReanimatedCount Auto
+Ammo Property ARM_AMMO_Framework_FireConjuredCount Auto
+Ammo Property ARM_AMMO_Framework_FrostConjuredCount Auto
+Ammo Property ARM_AMMO_Framework_ReanimatedCount Auto
+Ammo Property ARM_AMMO_Framework_ShockConjuredCount Auto
+Ammo Property ARM_AMMO_Framework_UndeadConjuredCount Auto
+Ammo Property ARM_AMMO_Framework_UntypedConjuredCount Auto
+
+Keyword Property ARM_KEYW_Framework_BindHealthKeyword Auto
+Keyword Property ARM_KEYW_Framework_BindStaminaKeyword Auto
+Keyword Property ARM_KEYW_Framework_BindMagickaKeyword Auto

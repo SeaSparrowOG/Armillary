@@ -1,4 +1,5 @@
 #include "BoundEffectManager/BoundEffectManager.h"
+#include "ConditionManager/ConditionManager.h"
 #include "Data/ModObjectManager.h"
 #include "Hooks/Hooks.h"
 #include "Papyrus/Papyrus.h"
@@ -18,6 +19,9 @@ static void MessageEventCallback(SKSE::MessagingInterface::Message* a_msg)
 		}
 		if (!BoundEffectManager::Initialize()) {
 			SKSE::stl::report_and_fail("Failed to initialize the Bound Effect Manager. Check the log for more information."sv);
+		}
+		if (!ConditionManager::Initialize()) {
+			SKSE::stl::report_and_fail("Failed to initialize the Conditioner Manager. Check the log for more information."sv);
 		}
 		SECTION_SEPARATOR;
 		logger::info("Finished startup tasks, enjoy your game!"sv);
@@ -87,14 +91,11 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	if (!Settings::INI::Read()) {
 		SKSE::stl::report_and_fail("Failed to load INI settings. Check the log for more information."sv);
 	}
-	SECTION_SEPARATOR;
 	if (!Hooks::Install()) {
 		SKSE::stl::report_and_fail("Failed to install hooks. Check the log for more information."sv);
 	}
-	SECTION_SEPARATOR;
 
 	SKSE::GetPapyrusInterface()->Register(Papyrus::RegisterFunctions);
-	SECTION_SEPARATOR;
 
 	const auto messaging = SKSE::GetMessagingInterface();
 	messaging->RegisterListener(&MessageEventCallback);
@@ -106,7 +107,6 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	serialization->SetLoadCallback(&Serialization::LoadCallback);
 	serialization->SetRevertCallback(&Serialization::RevertCallback);
 	logger::info("  >Registered necessary functions."sv);
-	SECTION_SEPARATOR;
 
 	return true;
 }
