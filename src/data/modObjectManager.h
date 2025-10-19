@@ -4,6 +4,9 @@ namespace Data
 {
 	bool PreloadModObjects();
 
+	inline static constexpr const char* HeavyArmor_HeavyCuirass = "ARM_KEWD_HeavyArmor_HeavyArmorCuirass";
+	inline static constexpr const char* HeavyArmor_Indomitable = "ARM_PERK_HeavyArmor_070_Indomitable";
+
 	class ModObjectManager :
 		public REX::Singleton<ModObjectManager>
 	{
@@ -28,11 +31,10 @@ namespace Data
 		return nullptr;
 	}
 
-	inline static constexpr std::size_t EXPECTED_MOD_OBJECT_COUNT = 0;
+	inline static constexpr std::size_t EXPECTED_MOD_OBJECT_COUNT = 2;
 
 	inline static constexpr std::array<const char*, EXPECTED_MOD_OBJECT_COUNT> EXPECTED_OBJECTS = {
+		HeavyArmor_HeavyCuirass,
+		HeavyArmor_Indomitable
 	};
-
-	inline static constexpr const char* HeavyArmor_HeavyCuirass = "ARM_KEWD_HeavyArmor_HeavyArmorCuirass";
-	inline static constexpr const char* HeavyArmor_Indomitable = "ARM_PERK_HeavyArmor_070_Indomitable";
 }

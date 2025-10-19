@@ -74,35 +74,36 @@ if(DEFINED ENV{SKYRIM_MODS_FOLDER} AND IS_DIRECTORY "$ENV{SKYRIM_MODS_FOLDER}")
 	else()
 		set(OUTPUT_FOLDER "$ENV{SKYRIM_MODS_FOLDER}/${PROJECT_NAME} - Test")
 	endif()
-endif()
 
-# ---- Compile Papyrus Scripts and Pack Into Archive ----
-include(Papyrus)
-include(BSArchive)
+	# ---- Compile Papyrus Scripts and Pack Into Archive ----
+	include(Papyrus)
+	include(BSArchive)
 
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Data/Source/Scripts")
-	file(GLOB ${PROJECT_NAME}_SOURCES
-		LIST_DIRECTORIES false
-		CONFIGURE_DEPENDS
-		"Data/Source/Scripts/*.psc"
-	)
+	if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Data/Source/Scripts")
+		file(GLOB ${PROJECT_NAME}_SOURCES
+			LIST_DIRECTORIES false
+			CONFIGURE_DEPENDS
+			"Data/Source/Scripts/*.psc"
+		)
 
-	Papyrus_Add(
-		"Papyrus"
-		GAME ${Skyrim64Path}
-		IMPORTS ${CMAKE_CURRENT_SOURCE_DIR}/Data/Source/Scripts
-		SOURCES ${${PROJECT_NAME}_SOURCES}
-		OPTIMIZE ANONYMIZE
-	)
+		Papyrus_Add(
+			"Papyrus"
+			GAME ${Skyrim64Path}
+			IMPORTS ${CMAKE_CURRENT_SOURCE_DIR}/Data/Source/Scripts 
+					"$ENV{SKYRIM_MODS_FOLDER}/Magic Tweaks SKSE/Source/Scripts"
+			SOURCES ${${PROJECT_NAME}_SOURCES}
+			OPTIMIZE ANONYMIZE
+		)
 
-	BSArchive_Add(
-		"BSA"
-		OUTPUT "${PROJECT_NAME}.bsa"
-		FORMAT SSE
-		FILES ${Papyrus_OUTPUT}
-	)
-else()
-	message(STATUS "No scripts to compile found, won't compress into BSA.")
+		BSArchive_Add(
+			"BSA"
+			OUTPUT "${PROJECT_NAME}.bsa"
+			FORMAT SSE
+			FILES ${Papyrus_OUTPUT}
+		)
+	else()
+		message(STATUS "No scripts to compile found, won't compress into BSA.")
+	endif()
 endif()
 
 # ---- Automatically copy artifacts to MO2 ----

@@ -95,3 +95,5 @@ inline constexpr bool always_false = false;
 #	define OFFSET(se, ae) se
 #	define OFFSET_3(se, ae, vr) se
 #endif
+
+using namespace RE::literals;
