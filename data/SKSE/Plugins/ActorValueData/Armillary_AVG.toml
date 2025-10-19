@@ -1,6 +1,0 @@
-[Quickcharge]
-type = "Adaptive"
-alias = "Aggression"
-
-[Include]
-"Armillary.esp" = ["Quickcharge"]

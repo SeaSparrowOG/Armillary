@@ -1,15 +1,13 @@
-#include "runtimePatcher/runtimePatcher.h"
+#include "RuntimePatcher.h"
 
-#include "runtimePatcher/Common/destructionPatcher.h"
-#include "runtimePatcher/Common/weaponPatcher.h"
-#include "runtimePatcher/Common/armorPatcher.h"
+#include "RuntimePatcher/Armors/ArmorPatcher.h"
 
 namespace RuntimePatcher
 {
-	void PatchAllForms() {
-		logger::info("Starting runtime patcher:");
-		Armor::Patch();
-		Weapons::Patch();
-		CloakSpells::Patch();
+	bool PatchGameForms() {
+		logger::info("Beginning runtime patching..."sv);
+		bool result = true;
+		result &= Armors::PatchArmorForms();
+		return result;
 	}
 }

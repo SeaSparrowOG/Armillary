@@ -1,17 +1,17 @@
 {
   "name": "armillary",
   "version-string": "1.0.0",
-  "description": "Complete modular gameplay overhaul for SkyrimSE.",
-  "homepage": "",
+  "description": "SKSE DLL companion for Armillary - A Modern Perk Tree Overhaul.",
+  "homepage": "https://github.com/SeaSparrowOG/SKSE-Plugin-Template",
   "license": "MIT",
   "dependencies": [
+    "boost-stl-interfaces",
     "fmt",
+    "jsoncpp",
     "rsm-binary-io",
     "spdlog",
-    "clib-util",
-    "jsoncpp",
     "simpleini",
     "xbyak"
   ],
-  "builtin-baseline": "ea295dff0b3e9e9caeb49d1225dc7272d3231cf1"
+  "builtin-baseline": "f4ea42fa5c2b993cf2b75725331616999e2e34d1"
 }

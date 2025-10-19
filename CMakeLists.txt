@@ -1,9 +1,10 @@
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 cmake_minimum_required(VERSION 3.24)
 
-option(BUILD_TEST "Sets log level to debug." OFF)
+option(FULL_RELEASE "Finalizes the build, compressing everything into a BSA." OFF)
+option(OUTDATED "Applies 1.5.97 offsets/IDs." OFF)
+option(COPY_BSA "Copies any generated BSA to the MO2 directory (if specified)." OFF)
+option(COPY_PEX "Copies any generated scripts to the MO2 directory (if specified). Applies after the BSA (if enabled)." ON)
+option(COPY_PSC "Copies any script sources to the MO2 directory (if specified). Applies after the BSA (if enabled)." ON)
 
 # -------- Project ----------
 project(
@@ -14,19 +15,28 @@ project(
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+get_filename_component(
+	Skyrim64Path
+	"[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Bethesda Softworks\\Skyrim Special Edition;installed path]"
+	ABSOLUTE CACHE
+)
+
 list(APPEND CMAKE_IGNORE_PATH "${PROJECT_BINARY_DIR}")
 list(APPEND CMAKE_MODULE_PATH
 	"${PROJECT_SOURCE_DIR}/tools/SKSE-CMakeModules/Modules"
 )
+list(APPEND CMAKE_MODULE_PATH
+	"${PROJECT_SOURCE_DIR}/tools/Bethesda-CMakeModules/Modules"
+)
 include(SKSEPlugin)
 set(SKSE_USE_XBYAK ON)
-
-add_compile_definitions(SKYRIM_AE)
-add_compile_definitions(SKYRIM_SUPPORT_AE)
 add_compile_definitions(SKSE_SUPPORT_XBYAK)
 
-if (BUILD_TEST)
-	add_compile_definitions(DEBUG)
+if(OUTDATED)
+	add_compile_definitions(SKYRIM_OUTDATED)
+else()
+	add_compile_definitions(SKYRIM_AE)
+	add_compile_definitions(SKYRIM_SUPPORT_AE)
 endif()
 
 SKSEPlugin_Add(
@@ -38,7 +48,6 @@ SKSEPlugin_Add(
 	PRECOMPILE_HEADERS
 		src/common/PCH.h
 )
-
 
 find_package(jsoncpp CONFIG REQUIRED)
 
@@ -54,72 +63,49 @@ set_target_properties(CommonLibSSE PROPERTIES
 
 set(DATA_DIR "${PROJECT_SOURCE_DIR}/data")
 
-install(
-	FILES "${DATA_DIR}/Source/Scripts/SEA_Armillary.psc"
-	DESTINATION "."
-)
-
-install(
-	FILES "${DATA_DIR}/Source/Scripts/ARM_ModObjects.psc"
-	DESTINATION "."
-)
-
-install(
-	FILES "${DATA_DIR}/Source/Scripts/ARM_ElementsAriseHazards.psc"
-	DESTINATION "."
-)
-
-install(
-	FILES "${DATA_DIR}/Source/Scripts/ARM_ElementsAriseHazardsFrost.psc"
-	DESTINATION "."
-)
-
-install(
-	FILES "${DATA_DIR}/Source/Scripts/ARM_ElementsAriseHazardsShock.psc"
-	DESTINATION "."
-)
-
-install(
-	FILES "${DATA_DIR}/SKSE/Plugins/ActorValueData/Armillary_AVG.toml"
-	DESTINATION "."
-)
-
-install(
-	FILES "${DATA_DIR}/SKSE/Plugins/CustomSkills/SKILLS.json"
-	DESTINATION "."
-)
-
-install(
-	FILES "${DATA_DIR}/SKSE/Plugins/CustomSkills/Armillary/Adventuring.json"
-	DESTINATION "."
-)
-
-install(
-	FILES "${DATA_DIR}/Interface/Translations/Armillary_ENGLISH.txt"
-	DESTINATION "."
-)
-
-install(
-	FILES "${DATA_DIR}/Armillary.esp"
-	DESTINATION "."
-)
-
-install(
-	FILES "${DATA_DIR}/Armillary.bsa"
-	DESTINATION "."
-)
-
 include(components.cmake)
 
 # ---- Post build ----
 if(DEFINED ENV{SKYRIM_MODS_FOLDER} AND IS_DIRECTORY "$ENV{SKYRIM_MODS_FOLDER}")
-	if(BUILD_TEST)
+	if(OUTDATED)
+		set(OUTPUT_FOLDER "$ENV{SKYRIM_MODS_FOLDER}/${PROJECT_NAME} - Outdated")
+	elseif (FULL_RELEASE)
+		set(OUTPUT_FOLDER "$ENV{SKYRIM_MODS_FOLDER}/${PROJECT_NAME} - Full Release")
+	else()
 		set(OUTPUT_FOLDER "$ENV{SKYRIM_MODS_FOLDER}/${PROJECT_NAME} - Test")
-	else() 
-		set(OUTPUT_FOLDER "$ENV{SKYRIM_MODS_FOLDER}/${PROJECT_NAME}")
 	endif()
 endif()
 
+# ---- Compile Papyrus Scripts and Pack Into Archive ----
+include(Papyrus)
+include(BSArchive)
+
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Data/Source/Scripts")
+	file(GLOB ${PROJECT_NAME}_SOURCES
+		LIST_DIRECTORIES false
+		CONFIGURE_DEPENDS
+		"Data/Source/Scripts/*.psc"
+	)
+
+	Papyrus_Add(
+		"Papyrus"
+		GAME ${Skyrim64Path}
+		IMPORTS ${CMAKE_CURRENT_SOURCE_DIR}/Data/Source/Scripts
+		SOURCES ${${PROJECT_NAME}_SOURCES}
+		OPTIMIZE ANONYMIZE
+	)
+
+	BSArchive_Add(
+		"BSA"
+		OUTPUT "${PROJECT_NAME}.bsa"
+		FORMAT SSE
+		FILES ${Papyrus_OUTPUT}
+	)
+else()
+	message(STATUS "No scripts to compile found, won't compress into BSA.")
+endif()
+
+# ---- Automatically copy artifacts to MO2 ----
 if(DEFINED OUTPUT_FOLDER)
     set(DLL_FOLDER "${OUTPUT_FOLDER}/SKSE/Plugins")
 
@@ -127,7 +113,50 @@ if(DEFINED OUTPUT_FOLDER)
         TARGET "${PROJECT_NAME}"
         POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "$<TARGET_FILE:${PROJECT_NAME}>" "${DLL_FOLDER}/$<TARGET_FILE_NAME:${PROJECT_NAME}>"
-		COMMAND "${CMAKE_COMMAND}" -E copy_if_different "$<TARGET_PDB_FILE:${PROJECT_NAME}>" "${DLL_FOLDER}/$<TARGET_PDB_FILE_NAME:${PROJECT_NAME}>"
-        VERBATIM
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "$<TARGET_PDB_FILE:${PROJECT_NAME}>" "${DLL_FOLDER}/$<TARGET_PDB_FILE_NAME:${PROJECT_NAME}>"
+
+		COMMAND "${CMAKE_COMMAND}"
+			-DSRC_DIR="${PROJECT_SOURCE_DIR}/Data"
+			-DDST_DIR="${OUTPUT_FOLDER}"
+			-DPROJECT_NAME="${PROJECT_NAME}"
+			-P "${PROJECT_SOURCE_DIR}/CMake/Scripts/CMake-Copy-Artifacts.cmake"
     )
+
+    if(COPY_BSA)
+		add_custom_command(
+			TARGET "${PROJECT_NAME}"
+			POST_BUILD
+			COMMAND "${CMAKE_COMMAND}"
+				-DSRC_DIR="${PROJECT_SOURCE_DIR}/Data"
+				-DDST_DIR=${OUTPUT_FOLDER}
+				-DPROJECT_NAME=${PROJECT_NAME}
+				-DBINARY_DIR=${CMAKE_BINARY_DIR}
+				-P "${PROJECT_SOURCE_DIR}/CMake/Scripts/CMake-Copy-Archive.cmake"
+			VERBATIM
+		)
+	endif()
+
+    if(COPY_PEX)
+        add_custom_command(
+        TARGET "${PROJECT_NAME}"
+        POST_BUILD
+        COMMAND "${CMAKE_COMMAND}"
+            -DCOMPILED_SCRIPTS="${CMAKE_BINARY_DIR}/Scripts"
+            -DOUTPUT_FOLDER="${OUTPUT_FOLDER}"
+            -P "${PROJECT_SOURCE_DIR}/CMake/Scripts/CMake-Copy-Scripts.cmake"
+        VERBATIM
+		)
+    endif()
+
+	if(COPY_PSC)
+        add_custom_command(
+        TARGET "${PROJECT_NAME}"
+        POST_BUILD
+        COMMAND "${CMAKE_COMMAND}"
+            -DSOURCE_SCRIPTS="${PROJECT_SOURCE_DIR}/Data/Source/Scripts"
+            -DOUTPUT_FOLDER="${OUTPUT_FOLDER}"
+            -P "${PROJECT_SOURCE_DIR}/CMake/Scripts/CMake-Copy-Sources.cmake"
+        VERBATIM
+		)
+    endif()
 endif()

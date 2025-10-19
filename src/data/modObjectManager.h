@@ -2,34 +2,20 @@
 
 namespace Data
 {
-	class ModObjectManager final : public RE::BSTEventSink<RE::TESQuestInitEvent>
+	bool PreloadModObjects();
+
+	class ModObjectManager :
+		public REX::Singleton<ModObjectManager>
 	{
 	public:
-		static constexpr auto QuestName = "ARM_ModObjectManager"sv;
-		static constexpr auto ScriptName = "ARM_ModObjects"sv;
+		const std::string QuestName = fmt::format("{}_ModObjectsQuest"sv, Plugin::NAME);
+		const std::string ScriptName = fmt::format("{}_ModObjectsScript"sv, Plugin::NAME);
 
-		ModObjectManager(const ModObjectManager&) = delete;
-		ModObjectManager(ModObjectManager&&) = delete;
-
-		~ModObjectManager() = default;
-
-		ModObjectManager& operator=(const ModObjectManager&) = delete;
-		ModObjectManager& operator=(ModObjectManager&&) = delete;
-
-		static ModObjectManager& Instance();
-
-		RE::BSEventNotifyControl ProcessEvent(
-			const RE::TESQuestInitEvent* a_event,
-			RE::BSTEventSource<RE::TESQuestInitEvent>* a_eventSource) override;
-
-		void Reload();
+		bool PreLoad();
 
 		[[nodiscard]] RE::TESForm* Get(std::string_view a_key) const;
-
 	private:
-		ModObjectManager() = default;
-
-		void Initialize(RE::TESQuest* a_quest);
+		bool Verify();
 
 		util::istring_map<RE::TESForm*> objects;
 	};
@@ -37,8 +23,16 @@ namespace Data
 	template <typename T>
 	[[nodiscard]] inline T* ModObject(std::string_view a_key)
 	{
-		if (const auto object = ModObjectManager::Instance().Get(a_key))
+		if (const auto object = ModObjectManager::GetSingleton()->Get(a_key))
 			return object->As<T>();
 		return nullptr;
 	}
+
+	inline static constexpr std::size_t EXPECTED_MOD_OBJECT_COUNT = 0;
+
+	inline static constexpr std::array<const char*, EXPECTED_MOD_OBJECT_COUNT> EXPECTED_OBJECTS = {
+	};
+
+	inline static constexpr const char* HeavyArmor_HeavyCuirass = "ARM_KEWD_HeavyArmor_HeavyArmorCuirass";
+	inline static constexpr const char* HeavyArmor_Indomitable = "ARM_PERK_HeavyArmor_070_Indomitable";
 }

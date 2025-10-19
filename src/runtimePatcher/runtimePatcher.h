@@ -2,5 +2,5 @@
 
 namespace RuntimePatcher
 {
-	void PatchAllForms();
+	bool PatchGameForms();
 }
